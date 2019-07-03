@@ -35,6 +35,7 @@ func main() {
 
 	for range timerCh {
 
+		lst := getList("cameras.lst")
 		for _, v := range lst {
 			if v != "" {
 				fmt.Println(v)
