@@ -29,7 +29,7 @@ func main() {
 		}
 	}
 
-	pollInterval := 60
+	pollInterval := 15
 
 	timerCh := time.Tick(time.Duration(pollInterval) * time.Minute)
 
@@ -55,7 +55,8 @@ func openMap(site, DirName string) {
 	ht := getExp(string(body), `poster=[:"/._a-z0-9A-Z"]+.style`)
 	ht = getExp(ht, `https[:"/._a-z0-9A-Z"]+jpg`)
 	nm := getExp(ht, `/[_a-z0-9A-Z]+.jpg`)
-	nm = nm + "_" + time.RFC3339 + ".jpg"
+	t := time.Now()
+	nm = nm + "_" + t.Format(time.RFC3339) + ".jpg"
 	DownloadFile(DirName+nm, ht)
 }
 
