@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -57,7 +58,7 @@ func openMap(site, DirName string) {
 	nm := getExp(ht, `/[_a-z0-9A-Z]+.jpg`)
 	t := time.Now()
 	nm = nm + "_" + t.Format(time.RFC3339) + ".jpg"
-	DownloadFile(DirName+nm, ht)
+	DownloadFile(path.Join(DirName, nm[1:]), ht)
 }
 
 func getTag(pageContent, startTag, endTag string) string {
