@@ -9,7 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -26,7 +26,11 @@ func main() {
 	for _, v := range lst {
 		if v != "" {
 			fmt.Println(v)
-			openMap(v, outputDirName)
+			if isPix(v) {
+				openPix(v, outputDirName)
+			} else {
+				openMap(v, outputDirName)
+			}
 		}
 	}
 
@@ -40,11 +44,19 @@ func main() {
 		for _, v := range lst {
 			if v != "" {
 				fmt.Println(v)
-				openMap(v, outputDirName)
+				if isPix(v) {
+					openPix(v, outputDirName)
+				} else {
+					openMap(v, outputDirName)
+				}
 			}
 
 		}
 	}
+}
+func openPix(pix, DirName string) {
+	nm := getExp(pix, `/[_a-z0-9A-Z]+.jpg`)
+	DownloadFile(filepath.Join(DirName, setStampedName(nm)), pix)
 }
 
 func openMap(site, DirName string) {
@@ -54,11 +66,13 @@ func openMap(site, DirName string) {
 		log.Fatal(err)
 	}
 	ht := getExp(string(body), `poster=[:"/._a-z0-9A-Z"]+.style`)
+	if ht == "" {
+		ht = getExp(string(body), `poster=[:"/._a-z0-9A-Z"]+.preload=`)
+	}
 	ht = getExp(ht, `https[:"/._a-z0-9A-Z"]+jpg`)
 	nm := getExp(ht, `/[_a-z0-9A-Z]+.jpg`)
-	t := time.Now()
-	nm = nm + "_" + t.Format(time.RFC3339) + ".jpg"
-	DownloadFile(path.Join(DirName, nm[1:]), ht)
+
+	DownloadFile(filepath.Join(DirName, setStampedName(nm)), ht)
 }
 
 func getTag(pageContent, startTag, endTag string) string {
@@ -76,8 +90,6 @@ func getTag(pageContent, startTag, endTag string) string {
 		fmt.Printf("No %s found.\n", endTag)
 		os.Exit(0)
 	}
-	fmt.Println(titleStartIndex)
-	fmt.Println(titleEndIndex)
 	return pageContent[titleStartIndex:titleEndIndex]
 }
 
@@ -155,4 +167,14 @@ func getList(lst string) []string {
 		log.Fatal(err)
 	}
 	return lines
+}
+
+func isPix(v string) bool {
+	return v[len(v)-3:] == "jpg"
+}
+
+func setStampedName(nm string) string {
+	t := time.Now()
+	tm := t.Format(time.RFC3339)
+	return nm[1:len(nm)-4] + "_" + tm[:len(tm)-6] + ".jpg"
 }
