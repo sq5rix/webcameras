@@ -29,7 +29,7 @@ func main() {
 			if isPix(v) {
 				openPix(v, outputDirName)
 			} else {
-				openMap(v, outputDirName)
+				openURL(v, outputDirName)
 			}
 		}
 	}
@@ -47,19 +47,20 @@ func main() {
 				if isPix(v) {
 					openPix(v, outputDirName)
 				} else {
-					openMap(v, outputDirName)
+					openURL(v, outputDirName)
 				}
 			}
 
 		}
 	}
 }
+
 func openPix(pix, DirName string) {
 	nm := getExp(pix, `/[_a-z0-9A-Z]+.jpg`)
 	DownloadFile(filepath.Join(DirName, setStampedName(nm)), pix)
 }
 
-func openMap(site, DirName string) {
+func openURL(site, DirName string) {
 	agent := "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:67.0) Gecko/20100101 Firefox/67.0"
 	body, err := HTTPRequestCustomUserAgent(site, agent)
 	if err != nil {
